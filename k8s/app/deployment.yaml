@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentiment-sense
+  namespace: sentiment-sense
+  labels:
+    app: sentiment-sense
+    version: v1
+spec:
+  replicas: 1  # Start with single replica for quick start
+  selector:
+    matchLabels:
+      app: sentiment-sense
+  template:
+    metadata:
+      labels:
+        app: sentiment-sense
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: sentiment-sense
+        # CHANGE THIS: Replace with your actual image
+        image: gcr.io/sentiment-sense-demo/sentiment-sense:latest
+        imagePullPolicy: IfNotPresent  # Use Always for remote registries
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        
+        # Environment variables from ConfigMap
+        envFrom:
+        - configMapRef:
+            name: sentiment-sense-config
+        
+        # Environment variables from Secret
+        env:
+        - name: ALERT_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: sentiment-sense-secret
+              key: ALERT_EMAIL
+        
+        # Resource limits (increased for HuggingFace model)
+        resources:
+          requests:
+            cpu: 500m
+            memory: 2Gi
+          limits:
+            cpu: 2000m
+            memory: 4Gi
+        
+        # Health checks
+        livenessProbe:
+          httpGet:
+            path: /health/simple
+            port: 8000
+          initialDelaySeconds: 60  # Wait for model to load
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /health/simple
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        # Startup probe for slow model loading
+        startupProbe:
+          httpGet:
+            path: /health/simple
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 15
+          timeoutSeconds: 10
+          failureThreshold: 20  # Allow up to 5 minutes for startup (30s + 20*15s = 330s)
+        
+        # Volume mounts for model cache (optional)
+        volumeMounts:
+        - name: model-cache
+          mountPath: /home/appuser/.cache/huggingface
+      
+      # Volumes
+      volumes:
+      - name: model-cache
+        emptyDir: {}  # Use emptyDir for quick start, PVC for production
+      
+      # Security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000

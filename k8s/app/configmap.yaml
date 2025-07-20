@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sentiment-sense-config
+  namespace: sentiment-sense
+  labels:
+    app: sentiment-sense
+data:
+  # Application Configuration
+  HOST: "0.0.0.0"
+  PORT: "8000"
+  LOG_LEVEL: "INFO"
+  LOG_FORMAT: "json"
+  
+  # Model Configuration
+  MODEL_NAME: "cardiffnlp/twitter-roberta-base-sentiment-latest"
+  MAX_TEXT_LENGTH: "512"
+  BATCH_SIZE_LIMIT: "10"
+  ENABLE_MODEL_CACHE: "true"
+  
+  # Monitoring Configuration
+  ENABLE_METRICS: "true"
+  METRICS_PORT: "9090"
+  
+  # Health Check Configuration
+  HEALTH_CHECK_TIMEOUT: "30"

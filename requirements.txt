@@ -1,0 +1,19 @@
+# Web framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+python-multipart==0.0.6
+
+# ML core dependencies
+transformers==4.35.2
+torch==2.1.1
+numpy<2.0.0
+scipy>=1.9.0
+
+# Basic dependencies
+requests>=2.28.0
+
+# Monitoring and logging
+prometheus-client>=0.19.0
+pythonjsonlogger>=3.0.0
+psutil>=5.9.0
