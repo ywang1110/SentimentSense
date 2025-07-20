@@ -7,9 +7,8 @@ A high-performance sentiment classification service powered by HuggingFace model
 **API deployed on GKE, ready to use:**
 
 - 🔗 **Base API URL**: http://34.58.0.33
-- 📖 **Interactive API Docs**: http://34.58.0.33/docs
+- 📖 **Interactive API Swagger Page**: http://34.58.0.33/docs
 - ❤️ **Health Check**: http://34.58.0.33/health/simple
-- 🧪 **Sentiment Analysis**: http://34.58.0.33/analyze
 
 ## ✨ Features
 
